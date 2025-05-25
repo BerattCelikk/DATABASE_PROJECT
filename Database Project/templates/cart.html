@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My Cart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <style>
+        table img {
+            max-width: 120px;
+            max-height: 80px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a href="{{ url_for('index') }}" class="navbar-brand">Car Rent</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="{{ url_for('cart') }}" class="nav-link active">Cart</a></li>
+                <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h1 class="mb-4">Your Cart</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if cart_items %}
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Car</th>
+                    <th>Number of Days (Date Range)</th>
+                    <th>Daily Price</th>
+                    <th>Total Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set total = namespace(value=0) %}
+                {% for item in cart_items %}
+                {% set daily_price = item['price'] // item['rental_days'] %}
+                {% set total.value = total.value + item['price'] %}
+                <tr>
+                    <td>{{ item['name'] }}</td>
+                    <td>{{ item['rental_days'] }} ({{ item['start_date'] }} - {{ item['end_date'] }})</td>
+                    <td>{{ daily_price }} €</td>
+                    <td>{{ item['price'] }} €</td>
+                    <td>
+                        <a href="{{ url_for('remove_from_cart', index=loop.index0) }}" class="btn btn-danger btn-sm">Remove</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h4>Total: {{ total.value }} €</h4>
+
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <a href="{{ url_for('complete_rental') }}" class="btn btn-success">Complete Rental</a>
+        </div>
+    {% else %}
+        <div class="alert alert-info mt-4" role="alert">
+            Your cart is empty.
+        </div>
+    {% endif %}
+</div>
+
+{% if rentals %}
+<div class="container mt-5">
+    <h2 class="mb-4">Currently Rented Cars</h2>
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Car</th>
+                <th>Price (€)</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rental in rentals %}
+            <tr>
+                <td>{{ rental.car.name }}</td>
+                <td>{{ rental.price }}</td>
+                <td>{{ rental.start_date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ rental.end_date.strftime('%Y-%m-%d') }}</td>
+                <td>
+                    {% if rental.status == 'pending' %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    {% elif rental.status == 'approved' %}
+                        <span class="badge bg-success">Approved</span>
+                    {% elif rental.status == 'cancelled' %}
+                        <span class="badge bg-danger">Cancelled</span>
+                    {% else %}
+                        {{ rental.status }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

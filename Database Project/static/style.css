@@ -1,0 +1,52 @@
+body{
+    background-color: #4f8899;
+    color: white;
+    font-family: 'Arial', sans-serif;
+}
+.card-img-top{
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 2px solid #000000;
+}
+.navbar-brand{
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fdd835 !important;
+}
+.navbar-nav .nav-link{
+    color:white;
+    font-weight: bold;
+}
+.btn{
+    background-color: #4f8899;
+    color: white;
+    font-weight: bold;
+}
+.match-card {
+    background-color: #ffffff;
+    border: 2px solid #fdd835;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #000000;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.match-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+.match-card img {
+    max-width: 100px;
+    height: auto;
+    margin-bottom: 10px;
+}
+.match-card .score {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 10px 0;
+}
+.match-card .date {
+    font-style: italic;
+    color: #333;
+}
